@@ -259,6 +259,16 @@ local exports = {
 	libusb_pollfd_added_callback = function(cbfunc) return callback("libusb_pollfd_added_cb", cbfunc) end;
 	libusb_pollfd_removed_callback = function(cbfunc) return callback("libusb_pollfd_removed_cb", cbfunc) end;
 
+	-- Functions
+	libusb_init = Lib_libusb.libusb_init;
+	libusb_exit = Lib_libusb.libusb_exit;
+	libusb_get_device_descriptor = Lib_libusb.libusb_get_device_descriptor;
+	libusb_get_bus_number = Lib_libusb.libusb_get_bus_number;
+	libusb_get_port_numbers = Lib_libusb.libusb_get_port_numbers;
+	libusb_get_device_list = Lib_libusb.libusb_get_device_list;
+	libusb_free_device_list = Lib_libusb.libusb_free_device_list;
+	libusb_get_device_address = Lib_libusb.libusb_get_device_address;
+
 	Constants = Constants;
 	Enums = Enums;
 }

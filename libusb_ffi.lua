@@ -316,7 +316,7 @@ void libusb_free_container_id_descriptor(
 	struct libusb_container_id_descriptor *container_id);
 uint8_t libusb_get_bus_number(libusb_device *dev);
 uint8_t libusb_get_port_number(libusb_device *dev);
-//int libusb_get_port_numbers(libusb_device *dev, uint8_t* port_numbers, int port_numbers_len);
+int libusb_get_port_numbers(libusb_device *dev, uint8_t* port_numbers, int port_numbers_len);
 //LIBUSB_DEPRECATED_FOR(libusb_get_port_numbers)
 int libusb_get_port_path(libusb_context *ctx, libusb_device *dev, uint8_t* path, uint8_t path_length);
 libusb_device * libusb_get_parent(libusb_device *dev);
