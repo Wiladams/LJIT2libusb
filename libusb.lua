@@ -249,6 +249,19 @@ local function callback(cbtypename, func)
 	return ffi.cast(cbtypename, func)
 end
 
+local function usb_get_constant_value(name)
+	return Constants[name];
+end
+
+local function usb_get_enum_value(name)
+	for k,value in pairs(Enums) do 
+		if value[name] then
+			return value[name];
+		end
+	end
+	return nil;
+end
+
 
 local exports = {
 	Lib_libusb = Lib_libusb;
@@ -290,6 +303,33 @@ setmetatable(exports, {
 
 		return self;
 	end,
+
+	__index = function(self, key)
+		-- first look for a function of the given name
+		local success, value = pcall(function() return Lib_libusb[key] end)
+		if success then
+			rawset(self, key, value);
+			return value;
+		end
+
+		-- next, look for an enum with the given name
+		local value = usb_get_enum_value(key);
+
+		if value ~= nil then
+			rawset(self, key, value)
+			return value;
+		end
+
+		-- finally, try the constants
+		value = usb_get_constant_value(key);
+		if value ~= nil then
+			rawset(self, key, value)
+			return value;
+		end
+		
+		return value;
+	end,
+
 })
 
 return exports
