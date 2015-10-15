@@ -91,24 +91,25 @@ function USBContext.devices(self)
 	return dev_gen, devlist, 0;
 end
 
-local function hotplugcallback(ctx, device, event, user_data)
+local function hpcallback(ctx, device, event, user_data)
 	print("hotplugcallback: ", device, event)
 	io.write("hotplugcallback\n")
 	io.flush();
 end
 
 function USBContext.registerHotplugCallback(self)
-	local cb = ffi.cast("libusb_hotplug_callback_fn", hotplugcallback)
+	local cb = usb.libusb_hotplug_callback(hpcallback);
 	local cbhandle = ffi.new("libusb_hotplug_callback_handle[1]")
 print("cb: ",cb)
 	local flags = bor(ffi.C.LIBUSB_HOTPLUG_EVENT_DEVICE_ARRIVED, ffi.C.LIBUSB_HOTPLUG_EVENT_DEVICE_LEFT)
 	print("any: ", usb.LIBUSB_HOTPLUG_MATCH_ANY)
-	
+
 	local res = usb.libusb_hotplug_register_callback(
 		self.Handle,
 		flags,
 		0,	-- or ffi.C.LIBUSB_HOTPLUG_ENUMERATE,
-		0, 0,	-- vid, pid
+		usb.LIBUSB_HOTPLUG_MATCH_ANY,		-- vendor_id 
+		usb.LIBUSB_HOTPLUG_MATCH_ANY,		-- product_id
 		usb.LIBUSB_HOTPLUG_MATCH_ANY,		-- dev_class
 		cb,			-- callback function
 		nil,		-- userdata

@@ -260,36 +260,44 @@ enum	libusb_error {
 ]]
 
 ffi.cdef[[
-int libusb_init(libusb_context **ctx);
-void libusb_exit(libusb_context *ctx);
-void libusb_set_debug(libusb_context *ctx, int level);
 const struct libusb_version * libusb_get_version(void);
 int libusb_has_capability(uint32_t capability);
 const char * libusb_error_name(int errcode);
 int libusb_setlocale(const char *locale);
 const char * libusb_strerror(enum	libusb_error errcode);
+]]
 
-ssize_t libusb_get_device_list(libusb_context *ctx,
-	libusb_device ***list);
-void libusb_free_device_list(libusb_device **list,
-	int unref_devices);
+ffi.cdef[[
+int libusb_init(libusb_context **ctx);
+void libusb_exit(libusb_context *ctx);
+void libusb_set_debug(libusb_context *ctx, int level);
+ssize_t libusb_get_device_list(libusb_context *ctx, libusb_device ***list);
+void libusb_free_device_list(libusb_device **list, int unref_devices);
+]]
+
+
+ffi.cdef[[
 libusb_device * libusb_ref_device(libusb_device *dev);
 void libusb_unref_device(libusb_device *dev);
 
-int libusb_get_configuration(libusb_device_handle *dev,
-	int *config);
-int libusb_get_device_descriptor(libusb_device *dev,
-	struct libusb_device_descriptor *desc);
-int libusb_get_active_config_descriptor(libusb_device *dev,
-	struct libusb_config_descriptor **config);
-int libusb_get_config_descriptor(libusb_device *dev,
-	uint8_t config_index, struct libusb_config_descriptor **config);
-int libusb_get_config_descriptor_by_value(libusb_device *dev,
-	uint8_t bConfigurationValue, struct libusb_config_descriptor **config);
-void libusb_free_config_descriptor(
-	struct libusb_config_descriptor *config);
-int libusb_get_ss_endpoint_companion_descriptor(
-	struct libusb_context *ctx,
+int libusb_get_device_descriptor(libusb_device *dev, struct libusb_device_descriptor *desc);
+int libusb_get_active_config_descriptor(libusb_device *dev, struct libusb_config_descriptor **config);
+int libusb_get_config_descriptor(libusb_device *dev, uint8_t config_index, struct libusb_config_descriptor **config);
+int libusb_get_config_descriptor_by_value(libusb_device *dev, uint8_t bConfigurationValue, struct libusb_config_descriptor **config);
+void libusb_free_config_descriptor(struct libusb_config_descriptor *config);
+
+uint8_t libusb_get_bus_number(libusb_device *dev);
+uint8_t libusb_get_port_number(libusb_device *dev);
+libusb_device * libusb_get_parent(libusb_device *dev);
+uint8_t libusb_get_device_address(libusb_device *dev);
+int libusb_get_device_speed(libusb_device *dev);
+int libusb_get_max_packet_size(libusb_device *dev, unsigned char endpoint);
+int libusb_get_max_iso_packet_size(libusb_device *dev, unsigned char endpoint);
+
+]]
+
+ffi.cdef[[
+int libusb_get_ss_endpoint_companion_descriptor(struct libusb_context *ctx,
 	const struct libusb_endpoint_descriptor *endpoint,
 	struct libusb_ss_endpoint_companion_descriptor **ep_comp);
 void libusb_free_ss_endpoint_companion_descriptor(
@@ -312,21 +320,15 @@ void libusb_free_ss_usb_device_capability_descriptor(
 int libusb_get_container_id_descriptor(struct libusb_context *ctx,
 	struct libusb_bos_dev_capability_descriptor *dev_cap,
 	struct libusb_container_id_descriptor **container_id);
-void libusb_free_container_id_descriptor(
-	struct libusb_container_id_descriptor *container_id);
-uint8_t libusb_get_bus_number(libusb_device *dev);
-uint8_t libusb_get_port_number(libusb_device *dev);
-int libusb_get_port_numbers(libusb_device *dev, uint8_t* port_numbers, int port_numbers_len);
-//LIBUSB_DEPRECATED_FOR(libusb_get_port_numbers)
-int libusb_get_port_path(libusb_context *ctx, libusb_device *dev, uint8_t* path, uint8_t path_length);
-libusb_device * libusb_get_parent(libusb_device *dev);
-uint8_t libusb_get_device_address(libusb_device *dev);
-int libusb_get_device_speed(libusb_device *dev);
-int libusb_get_max_packet_size(libusb_device *dev,
-	unsigned char endpoint);
-int libusb_get_max_iso_packet_size(libusb_device *dev,
-	unsigned char endpoint);
+void libusb_free_container_id_descriptor(struct libusb_container_id_descriptor *container_id);
 
+
+
+int libusb_get_port_path(libusb_context *ctx, libusb_device *dev, uint8_t* path, uint8_t path_length);
+]]
+
+ffi.cdef[[
+int libusb_get_configuration(libusb_device_handle *dev, int *config);
 int libusb_open(libusb_device *dev, libusb_device_handle **handle);
 void libusb_close(libusb_device_handle *dev_handle);
 libusb_device * libusb_get_device(libusb_device_handle *dev_handle);
@@ -361,6 +363,10 @@ int libusb_attach_kernel_driver(libusb_device_handle *dev,
 int libusb_set_auto_detach_kernel_driver(
 	libusb_device_handle *dev, int enable);
 ]]
+
+--//int libusb_get_port_numbers(libusb_device *dev, uint8_t* port_numbers, int port_numbers_len);
+--//LIBUSB_DEPRECATED_FOR(libusb_get_port_numbers)
+
 
 
 

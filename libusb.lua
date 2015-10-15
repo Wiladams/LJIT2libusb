@@ -4,29 +4,33 @@ local lshift, rshift = bit.lshift, bit.rshift
 
 
 local Lib_libusb = require("libusb_ffi")
+local libc = require("libc")
 
 local Enums = {
 
--- Device and/or Interface Class codes
+	-- Device and/or Interface Class codes
 	libusb_class_code = {
-		LIBUSB_CLASS_PER_INTERFACE = 0,
-		LIBUSB_CLASS_AUDIO = 1,
-		LIBUSB_CLASS_COMM = 2,
-		LIBUSB_CLASS_HID = 3,
-		LIBUSB_CLASS_PHYSICAL = 5,
-		LIBUSB_CLASS_PRINTER = 7,
-		LIBUSB_CLASS_IMAGE = 6,
-		LIBUSB_CLASS_MASS_STORAGE = 8,
-		LIBUSB_CLASS_HUB = 9,
-		LIBUSB_CLASS_DATA = 10,
-		LIBUSB_CLASS_SMART_CARD = 0x0b,
-		LIBUSB_CLASS_CONTENT_SECURITY = 0x0d,
-		LIBUSB_CLASS_VIDEO = 0x0e,
-		LIBUSB_CLASS_PERSONAL_HEALTHCARE = 0x0f,
-		LIBUSB_CLASS_DIAGNOSTIC_DEVICE = 0xdc,
-		LIBUSB_CLASS_WIRELESS = 0xe0,
-		LIBUSB_CLASS_APPLICATION = 0xfe,
-		LIBUSB_CLASS_VENDOR_SPEC = 0xff
+		LIBUSB_CLASS_PER_INTERFACE 			= 0,		-- Device
+		LIBUSB_CLASS_AUDIO 					= 1,		-- Interface
+		LIBUSB_CLASS_COMM 					= 2,		-- Both
+		LIBUSB_CLASS_HID 					= 3,		-- Interface
+		LIBUSB_CLASS_PHYSICAL 				= 5,		-- Interface
+		LIBUSB_CLASS_IMAGE 					= 6,		-- Interface
+		LIBUSB_CLASS_PRINTER 				= 7,		-- Interface
+		LIBUSB_CLASS_MASS_STORAGE 			= 8,		-- Interface
+		LIBUSB_CLASS_HUB 					= 9,		-- Device
+		LIBUSB_CLASS_DATA 					= 0x0A,		-- Interface
+		LIBUSB_CLASS_SMART_CARD 			= 0x0B,		-- Interface
+		LIBUSB_CLASS_CONTENT_SECURITY 		= 0x0D,		-- Interface
+		LIBUSB_CLASS_VIDEO 					= 0x0E,		-- Interface
+		LIBUSB_CLASS_PERSONAL_HEALTHCARE 	= 0x0F,		-- Interface
+		LIBUSB_CLASS_AUDIO_VIDEO_DEVICES	= 0x10,		-- Interface
+		LIBUSB_CLASS_BILLBOARD_DEVICE		= 0x11,		-- Device
+		LIBUSB_CLASS_DIAGNOSTIC_DEVICE 		= 0xDC,		-- Both
+		LIBUSB_CLASS_WIRELESS 				= 0xE0,		-- Interface
+		LIBUSB_CLASS_MISCELLANEOUS			= 0xEF,		-- Both
+		LIBUSB_CLASS_APPLICATION 			= 0xFE,		-- Interface
+		LIBUSB_CLASS_VENDOR_SPEC 			= 0xFF		-- Both
 	};
 
 -- Descriptor types as defined by the USB specification. 
@@ -198,7 +202,180 @@ local Enums = {
 	};
 }
 
+--[[
+	libusb_class_code = {
+		LIBUSB_CLASS_PER_INTERFACE 			= 0,		-- Device
+		LIBUSB_CLASS_AUDIO 					= 1,		-- Interface
+		LIBUSB_CLASS_COMM 					= 2,		-- Both
+		LIBUSB_CLASS_HID 					= 3,		-- Interface
+		LIBUSB_CLASS_PHYSICAL 				= 5,		-- Interface
+		LIBUSB_CLASS_IMAGE 					= 6,		-- Interface
+		LIBUSB_CLASS_PRINTER 				= 7,		-- Interface
+		LIBUSB_CLASS_MASS_STORAGE 			= 8,		-- Interface
+		LIBUSB_CLASS_HUB 					= 9,		-- Device
+		LIBUSB_CLASS_DATA 					= 0x0A,		-- Interface
+		LIBUSB_CLASS_SMART_CARD 			= 0x0B,		-- Interface
+		LIBUSB_CLASS_CONTENT_SECURITY 		= 0x0D,		-- Interface
+		LIBUSB_CLASS_VIDEO 					= 0x0E,		-- Interface
+		LIBUSB_CLASS_PERSONAL_HEALTHCARE 	= 0x0F,		-- Interface
+		LIBUSB_CLASS_AUDIO_VIDEO_DEVICES	= 0x10,		-- Interface
+		LIBUSB_CLASS_BILLBOARD_DEVICE		= 0x11,		-- Device
+		LIBUSB_CLASS_DIAGNOSTIC_DEVICE 		= 0xDC,		-- Both
+		LIBUSB_CLASS_WIRELESS 				= 0xE0,		-- Interface
+		LIBUSB_CLASS_MISCELLANEOUS			= 0xEF,		-- Both
+		LIBUSB_CLASS_APPLICATION 			= 0xFE,		-- Interface
+		LIBUSB_CLASS_VENDOR_SPEC 			= 0xFF		-- Both
+	};
+]]
 
+-- class/sub-class/protocol
+-- This data is primarily used to create human readable 
+-- strings, but could be used as general lookup as well.
+-- http://www.usb.org/developers/defined_class
+local ClassDb = {
+	[Enums.libusb_class_code.LIBUSB_CLASS_PER_INTERFACE] = {
+		[0] = {
+			[0] = ""
+		}
+	},
+
+	[Enums.libusb_class_code.LIBUSB_CLASS_AUDIO] = {
+
+	},
+	[Enums.libusb_class_code.LIBUSB_CLASS_COMM] = {
+
+	},
+	[Enums.libusb_class_code.LIBUSB_CLASS_HID] = {
+
+	},
+	[Enums.libusb_class_code.LIBUSB_CLASS_PHYSICAL] = {
+
+	},
+
+	-- still imaging
+	[Enums.libusb_class_code.LIBUSB_CLASS_IMAGE] = {
+		[1] = {
+			[1] = "Still Imaging Device"
+		}
+	},
+	[Enums.libusb_class_code.LIBUSB_CLASS_PRINTER] = {
+
+	},
+	[Enums.libusb_class_code.LIBUSB_CLASS_MASS_STORAGE] = {
+
+	},
+	[Enums.libusb_class_code.LIBUSB_CLASS_HUB] = {
+		[0] = {
+			[0] = "Full speed Hub",
+			[1] = "Hi-speed hub with single TT",
+			[2] = "Hi-speed hub with multiple TTs"
+		}
+	},
+	[Enums.libusb_class_code.LIBUSB_CLASS_DATA] = {
+
+	},
+	[Enums.libusb_class_code.LIBUSB_CLASS_SMART_CARD] = {
+
+	},	
+	[Enums.libusb_class_code.LIBUSB_CLASS_CONTENT_SECURITY] = {
+
+	},
+	[Enums.libusb_class_code.LIBUSB_CLASS_VIDEO] = {
+
+	},
+	[Enums.libusb_class_code.LIBUSB_CLASS_PERSONAL_HEALTHCARE] = {
+
+	},
+	[Enums.libusb_class_code.LIBUSB_CLASS_AUDIO_VIDEO_DEVICES] = {
+		[1] = {
+			[0] = "Audio/Video Device – AVControl Interface"
+		},
+		[2] = {
+			[0] = "Audio/Video Device – AVData Video Streaming Interface"
+		},
+		[3] = {
+			[0] = "Audio/Video Device - AVData Audio Streaming Interface"
+		},
+	},
+	[Enums.libusb_class_code.LIBUSB_CLASS_BILLBOARD_DEVICE] = {
+		[0] = {
+			[0] = "Billboard Device"
+		}
+	},
+	[Enums.libusb_class_code.LIBUSB_CLASS_DIAGNOSTIC_DEVICE] = {
+
+	},
+	[Enums.libusb_class_code.LIBUSB_CLASS_WIRELESS] = {
+		[1] = {
+			[1] = "Bluetooth Programming Interface",
+			[2] = "UWB Radio Control Interface",
+			[3] = "Remote NDIS",
+			[4] = "Bluetooth AMP Controller"
+		},
+
+		[2] = {
+			[1] = "Host Wire Adapter Control/Data interface",
+			[2] = "Device Wire Adapter Control/Data interface",
+			[3] = "Device Wire Adapter Isochronous interface"
+		}
+	},
+
+
+	[Enums.libusb_class_code.LIBUSB_CLASS_MISCELLANEOUS] = {
+		[1] = {
+			[1] = "Active Sync device",
+			[2] = "Palm Sync"
+		},
+		[2] = {
+			[1] = "Interface Association Descriptor",
+			[2] = "Wire Adapter Multifunction Peripheral programming interface"
+		},
+		[3] = {
+			[1] = "Cable based Association Framework",
+		},
+		[4] = {
+			[1] = "RNDIS over Ethernet",
+			[2] = "RNDIS over WiFi",
+			[3] = "RNDIS over WiMAX",
+			[4] = "RNDIS over WWAN",
+			[5] = "RNDIS for Raw IPv4",
+			[6] = "RNDIS for Raw IPv6",
+			[7] = "RNDIS for GPRS"
+		},
+		[5] = {
+			[0] = "USB3 Vision Control Interface",
+			[1] = "USB3 Vision Event interface",
+			[2] = "USB3 Vision Streaming interface",
+		},
+	},
+
+
+	[Enums.libusb_class_code.LIBUSB_CLASS_APPLICATION] = {
+
+	},
+
+	[Enums.libusb_class_code.LIBUSB_CLASS_VENDOR_SPEC] = {
+
+	},
+}
+
+local function lookupClassDescriptor(class, subclass, protocol)
+	-- start with the string simply being the class code
+	local str = libc.getNameOfValue(class, Enums.libusb_class_code);
+	
+	local classtbl = ClassDb[class]
+	if classtbl then
+		local subtbl = classtbl[subclass]
+		if subtbl then
+			local protoval = subtbl[protocol]
+			if protoval then
+				str = protoval.." ( "..str..")";
+			end
+		end
+	end
+
+	return str
+end
 
 local Constants = {
 	LIBUSB_API_VERSION = 0x01000103;
@@ -266,24 +443,31 @@ end
 local exports = {
 	Lib_libusb = Lib_libusb;
 
+	Constants = Constants;
+	Enums = Enums;
+	ClassDb = ClassDb;
+
+	-- local functions 
+	lookupClassDescriptor = lookupClassDescriptor;
+
 	-- callback functin wrappers
 	libusb_hotplug_callback = function(cbfunc) return callback("libusb_hotplug_callback_fn", cbfunc) end;
 	libusb_transfer_callback = function(cbfunc) return callback("libusb_transfer_cb_fn", cbfunc) end;
 	libusb_pollfd_added_callback = function(cbfunc) return callback("libusb_pollfd_added_cb", cbfunc) end;
 	libusb_pollfd_removed_callback = function(cbfunc) return callback("libusb_pollfd_removed_cb", cbfunc) end;
 
+
+
 	-- Functions
 	libusb_init = Lib_libusb.libusb_init;
 	libusb_exit = Lib_libusb.libusb_exit;
 	libusb_get_device_descriptor = Lib_libusb.libusb_get_device_descriptor;
 	libusb_get_bus_number = Lib_libusb.libusb_get_bus_number;
-	libusb_get_port_numbers = Lib_libusb.libusb_get_port_numbers;
 	libusb_get_device_list = Lib_libusb.libusb_get_device_list;
 	libusb_free_device_list = Lib_libusb.libusb_free_device_list;
 	libusb_get_device_address = Lib_libusb.libusb_get_device_address;
 
-	Constants = Constants;
-	Enums = Enums;
+
 }
 
 setmetatable(exports, {

@@ -40,10 +40,21 @@ local function safestring(str, default)
 	return ffi.string(str)
 end
 
+function getNameOfValue(value, tbl)
+	for k,v in pairs(tbl) do
+		if v == value 
+			then return k
+		end
+	end
+
+	return string.format("UNKNOWN VALUE: %d", value);
+end 
+
 
 local exports = {
 	libusb_le16_to_cpu = libusb_cpu_to_le16;	
 
+	getNameOfValue = getNameOfValue;
 	safestring = safestring;
 }
 

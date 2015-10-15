@@ -62,4 +62,33 @@ function USBDeviceReference.getActive(self)
 	return USBDevice(handle)
 end
 
+function USBDeviceReference.getParent(self)
+	local parentHandle = usb.libusb_get_parent(self.Handle);
+	if parentHandle == nil then
+		return nil;
+	end
+
+	return USBDeviceReference(parentHandle);
+end
+
+function USBDeviceReference.getAddress(self)
+	local res = usb.libusb_get_device_address(self.Handle);
+	return tonumber(res);
+end
+
+function USBDeviceReference.getBusNumber(self)
+	local res = usb.libusb_get_bus_number(self.Handle);
+	return tonumber(res);
+end
+
+function USBDeviceReference.getPortNumber(self)
+	local res = usb.libusb_get_port_number(self.Handle);
+	return res;
+end
+
+function USBDeviceReference.getNegotiatedSpeed(self)
+	local res = usb.libusb_get_device_speed(self.Handle);
+	return tonumber(res)
+end
+
 return USBDeviceReference;

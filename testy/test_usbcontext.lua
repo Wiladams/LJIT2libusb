@@ -1,5 +1,7 @@
 package.path = package.path..";../?.lua"
 
+local libc = require("libc")
+local usb = require("libusb")
 local USBContext = require("USBContext")
 
 local function printVersion(ver)
@@ -17,21 +19,40 @@ Description: %s
 	ver.Description));
 end
 
-local ctxt = USBContext();
+local function printDeviceReference(devRef)
+	print(string.format([[
+== USB Device Reference ==
+  Class: %s
+    Bus: %d 
+   Port: %d 
+Address: %d
+Negotiated Speed: %s [%d]
+]],
+	usb.lookupClassDescriptor(devRef.Description.bDeviceClass,
+		devRef.Description.bDeviceSubClass,
+		devRef.Description.bDeviceProtocol),
 
-local function test_version()
-local ver = ctxt:getLibraryVersion();
-
-printVersion(ver)
+	devRef:getBusNumber(),
+	devRef:getPortNumber(),
+	devRef:getAddress(),
+	libc.getNameOfValue(devRef:getNegotiatedSpeed(), usb.Enums.libusb_speed),
+	devRef:getNegotiatedSpeed()))
 end
 
-local function test_enumDevices()
+
+local function test_version(ctxt)
+	local ver = ctxt:getLibraryVersion();
+
+	printVersion(ver)
+end
+
+local function test_enumDevices(ctxt)
 	for _, dref in ctxt:devices() do 
-		print("Device: ", dref);
+		printDeviceReference(dref);
 	end
 end
 
-local function test_hotplug()
+local function test_hotplug(ctxt)
 	ctxt:registerHotplugCallback();
 
 	while true do
@@ -39,8 +60,12 @@ local function test_hotplug()
 	end
 end
 
-test_version();
-test_enumDevices();
+local function main()
+	local ctxt = USBContext();
+	test_version(ctxt);
+	test_enumDevices(ctxt);
 
-test_hotplug();
+	--test_hotplug();
+end
 
+main()
