@@ -33,20 +33,20 @@ local Enums = {
 		LIBUSB_CLASS_VENDOR_SPEC 			= 0xFF		-- Both
 	};
 
--- Descriptor types as defined by the USB specification. 
+	-- Descriptor types as defined by the USB specification. 
 	libusb_descriptor_type = {
-		LIBUSB_DT_DEVICE = 0x01,
-		LIBUSB_DT_CONFIG = 0x02,
-		LIBUSB_DT_STRING = 0x03,
-		LIBUSB_DT_INTERFACE = 0x04,
-		LIBUSB_DT_ENDPOINT = 0x05,
-		LIBUSB_DT_BOS = 0x0f,
-		LIBUSB_DT_DEVICE_CAPABILITY = 0x10,
-		LIBUSB_DT_HID = 0x21,
-		LIBUSB_DT_REPORT = 0x22,
-		LIBUSB_DT_PHYSICAL = 0x23,
-		LIBUSB_DT_HUB = 0x29,
-		LIBUSB_DT_SUPERSPEED_HUB = 0x2a,
+		LIBUSB_DT_DEVICE 				= 0x01,
+		LIBUSB_DT_CONFIG 				= 0x02,
+		LIBUSB_DT_STRING 				= 0x03,
+		LIBUSB_DT_INTERFACE 			= 0x04,
+		LIBUSB_DT_ENDPOINT 				= 0x05,
+		LIBUSB_DT_BOS 					= 0x0f,
+		LIBUSB_DT_DEVICE_CAPABILITY 	= 0x10,
+		LIBUSB_DT_HID 					= 0x21,
+		LIBUSB_DT_REPORT 				= 0x22,
+		LIBUSB_DT_PHYSICAL 				= 0x23,
+		LIBUSB_DT_HUB 					= 0x29,
+		LIBUSB_DT_SUPERSPEED_HUB 		= 0x2a,
 		LIBUSB_DT_SS_ENDPOINT_COMPANION = 0x30
 	};
 
@@ -202,31 +202,7 @@ local Enums = {
 	};
 }
 
---[[
-	libusb_class_code = {
-		LIBUSB_CLASS_PER_INTERFACE 			= 0,		-- Device
-		LIBUSB_CLASS_AUDIO 					= 1,		-- Interface
-		LIBUSB_CLASS_COMM 					= 2,		-- Both
-		LIBUSB_CLASS_HID 					= 3,		-- Interface
-		LIBUSB_CLASS_PHYSICAL 				= 5,		-- Interface
-		LIBUSB_CLASS_IMAGE 					= 6,		-- Interface
-		LIBUSB_CLASS_PRINTER 				= 7,		-- Interface
-		LIBUSB_CLASS_MASS_STORAGE 			= 8,		-- Interface
-		LIBUSB_CLASS_HUB 					= 9,		-- Device
-		LIBUSB_CLASS_DATA 					= 0x0A,		-- Interface
-		LIBUSB_CLASS_SMART_CARD 			= 0x0B,		-- Interface
-		LIBUSB_CLASS_CONTENT_SECURITY 		= 0x0D,		-- Interface
-		LIBUSB_CLASS_VIDEO 					= 0x0E,		-- Interface
-		LIBUSB_CLASS_PERSONAL_HEALTHCARE 	= 0x0F,		-- Interface
-		LIBUSB_CLASS_AUDIO_VIDEO_DEVICES	= 0x10,		-- Interface
-		LIBUSB_CLASS_BILLBOARD_DEVICE		= 0x11,		-- Device
-		LIBUSB_CLASS_DIAGNOSTIC_DEVICE 		= 0xDC,		-- Both
-		LIBUSB_CLASS_WIRELESS 				= 0xE0,		-- Interface
-		LIBUSB_CLASS_MISCELLANEOUS			= 0xEF,		-- Both
-		LIBUSB_CLASS_APPLICATION 			= 0xFE,		-- Interface
-		LIBUSB_CLASS_VENDOR_SPEC 			= 0xFF		-- Both
-	};
-]]
+
 
 -- class/sub-class/protocol
 -- This data is primarily used to create human readable 

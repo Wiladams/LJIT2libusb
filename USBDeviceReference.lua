@@ -26,15 +26,38 @@ local USBDeviceReference_mt = {
 }
 
 function USBDeviceReference.init(self, devHandle)
-	local obj = {
-		Handle = devHandle;
-	}
-	setmetatable(obj, USBDeviceReference_mt)
-
 	-- get the device descriptor
 	local desc = ffi.new("struct libusb_device_descriptor");
 	local res = usb.libusb_get_device_descriptor(devHandle, desc);
-	obj.Description = desc;
+
+	local configdesc = ffi.new("struct libusb_config_descriptor *[1]")
+	local configres = usb.libusb_get_active_config_descriptor(devHandle, configdesc);
+	if configres ~= 0 then
+		return nil, "libusb_get_active_conifig_descriptor(), failed"
+	end
+	configdesc = configdesc[0];
+	ffi.gc(configdesc, usb.libusb_free_config_descriptor);
+
+
+	local obj = {
+		Handle = devHandle;
+
+		-- Some raw data structures
+		Description = desc;
+		ActiveConfig = configdesc;
+
+
+		-- Device class information
+		Class = tonumber(desc.bDeviceClass);
+		Subclass = tonumber(desc.bDeviceSubClass);
+		Protocol = tonumber(desc.bDeviceProtocol);
+		ClassDescription = usb.lookupClassDescriptor(desc.bDeviceClass,
+			desc.bDeviceSubClass,
+			desc.bDeviceProtocol);
+
+	}
+	setmetatable(obj, USBDeviceReference_mt)
+
 
 	return obj;
 end
@@ -90,5 +113,6 @@ function USBDeviceReference.getNegotiatedSpeed(self)
 	local res = usb.libusb_get_device_speed(self.Handle);
 	return tonumber(res)
 end
+
 
 return USBDeviceReference;

@@ -27,16 +27,27 @@ local function printDeviceReference(devRef)
    Port: %d 
 Address: %d
 Negotiated Speed: %s [%d]
+Configurations: %d
+    Interfaces: %d
 ]],
-	usb.lookupClassDescriptor(devRef.Description.bDeviceClass,
-		devRef.Description.bDeviceSubClass,
-		devRef.Description.bDeviceProtocol),
-
+	devRef.ClassDescription,
 	devRef:getBusNumber(),
 	devRef:getPortNumber(),
 	devRef:getAddress(),
 	libc.getNameOfValue(devRef:getNegotiatedSpeed(), usb.Enums.libusb_speed),
-	devRef:getNegotiatedSpeed()))
+	devRef:getNegotiatedSpeed(),
+	devRef.Description.bNumConfigurations,
+	devRef.ActiveConfig.bNumInterfaces))
+	print(string.format([[
+-- Interface --
+	Num Alt Setting: %d
+	Class: %s
+]],
+	devRef.ActiveConfig.interface.num_altsetting,
+	usb.lookupClassDescriptor(devRef.ActiveConfig.interface.altsetting.bInterfaceClass,
+		devRef.ActiveConfig.interface.altsetting.bInterfaceSubClass,
+		devRef.ActiveConfig.interface.altsetting.bInterfaceProtocol)
+	));
 end
 
 

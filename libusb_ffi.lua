@@ -275,6 +275,34 @@ ssize_t libusb_get_device_list(libusb_context *ctx, libusb_device ***list);
 void libusb_free_device_list(libusb_device **list, int unref_devices);
 ]]
 
+ffi.cdef[[
+
+int libusb_try_lock_events(libusb_context *ctx);
+void libusb_lock_events(libusb_context *ctx);
+void libusb_unlock_events(libusb_context *ctx);
+int libusb_event_handling_ok(libusb_context *ctx);
+int libusb_event_handler_active(libusb_context *ctx);
+void libusb_lock_event_waiters(libusb_context *ctx);
+void libusb_unlock_event_waiters(libusb_context *ctx);
+int libusb_wait_for_event(libusb_context *ctx, struct timeval *tv);
+
+int libusb_handle_events_timeout(libusb_context *ctx,struct timeval *tv);
+int libusb_handle_events_timeout_completed(libusb_context *ctx,struct timeval *tv, int *completed);
+int libusb_handle_events(libusb_context *ctx);
+int libusb_handle_events_completed(libusb_context *ctx, int *completed);
+int libusb_handle_events_locked(libusb_context *ctx, struct timeval *tv);
+int libusb_pollfds_handle_timeouts(libusb_context *ctx);
+int libusb_get_next_timeout(libusb_context *ctx,struct timeval *tv);
+]]
+
+ffi.cdef[[
+const struct libusb_pollfd **  libusb_get_pollfds(libusb_context *ctx);
+void  libusb_set_pollfd_notifiers(libusb_context *ctx,
+	libusb_pollfd_added_cb added_cb, libusb_pollfd_removed_cb removed_cb,
+	void *user_data);
+]]
+
+
 
 ffi.cdef[[
 libusb_device * libusb_ref_device(libusb_device *dev);
@@ -333,35 +361,25 @@ int libusb_open(libusb_device *dev, libusb_device_handle **handle);
 void libusb_close(libusb_device_handle *dev_handle);
 libusb_device * libusb_get_device(libusb_device_handle *dev_handle);
 
-int libusb_set_configuration(libusb_device_handle *dev,
-	int configuration);
-int libusb_claim_interface(libusb_device_handle *dev,
-	int interface_number);
-int libusb_release_interface(libusb_device_handle *dev,
-	int interface_number);
+int libusb_set_configuration(libusb_device_handle *dev, int configuration);
+int libusb_claim_interface(libusb_device_handle *dev, int interface_number);
+int libusb_release_interface(libusb_device_handle *dev, int interface_number);
 
-libusb_device_handle * libusb_open_device_with_vid_pid(
-	libusb_context *ctx, uint16_t vendor_id, uint16_t product_id);
+libusb_device_handle * libusb_open_device_with_vid_pid(libusb_context *ctx, uint16_t vendor_id, uint16_t product_id);
 
-int libusb_set_interface_alt_setting(libusb_device_handle *dev,
-	int interface_number, int alternate_setting);
-int libusb_clear_halt(libusb_device_handle *dev,
-	unsigned char endpoint);
+int libusb_set_interface_alt_setting(libusb_device_handle *dev, int interface_number, int alternate_setting);
+int libusb_clear_halt(libusb_device_handle *dev, unsigned char endpoint);
 int libusb_reset_device(libusb_device_handle *dev);
+]]
 
-int libusb_alloc_streams(libusb_device_handle *dev,
-	uint32_t num_streams, unsigned char *endpoints, int num_endpoints);
-int libusb_free_streams(libusb_device_handle *dev,
-	unsigned char *endpoints, int num_endpoints);
+ffi.cdef[[
+int libusb_alloc_streams(libusb_device_handle *dev, uint32_t num_streams, unsigned char *endpoints, int num_endpoints);
+int libusb_free_streams(libusb_device_handle *dev, unsigned char *endpoints, int num_endpoints);
 
-int libusb_kernel_driver_active(libusb_device_handle *dev,
-	int interface_number);
-int libusb_detach_kernel_driver(libusb_device_handle *dev,
-	int interface_number);
-int libusb_attach_kernel_driver(libusb_device_handle *dev,
-	int interface_number);
-int libusb_set_auto_detach_kernel_driver(
-	libusb_device_handle *dev, int enable);
+int libusb_kernel_driver_active(libusb_device_handle *dev, int interface_number);
+int libusb_detach_kernel_driver(libusb_device_handle *dev, int interface_number);
+int libusb_attach_kernel_driver(libusb_device_handle *dev, int interface_number);
+int libusb_set_auto_detach_kernel_driver(libusb_device_handle *dev, int enable);
 ]]
 
 --//int libusb_get_port_numbers(libusb_device *dev, uint8_t* port_numbers, int port_numbers_len);
@@ -401,39 +419,10 @@ int  libusb_get_string_descriptor_ascii(libusb_device_handle *dev,
 	uint8_t desc_index, unsigned char *data, int length);
 ]]
 
-ffi.cdef[[
-
-int libusb_try_lock_events(libusb_context *ctx);
-void libusb_lock_events(libusb_context *ctx);
-void libusb_unlock_events(libusb_context *ctx);
-int libusb_event_handling_ok(libusb_context *ctx);
-int libusb_event_handler_active(libusb_context *ctx);
-void libusb_lock_event_waiters(libusb_context *ctx);
-void libusb_unlock_event_waiters(libusb_context *ctx);
-int libusb_wait_for_event(libusb_context *ctx, struct timeval *tv);
-
-int libusb_handle_events_timeout(libusb_context *ctx,
-	struct timeval *tv);
-int libusb_handle_events_timeout_completed(libusb_context *ctx,
-	struct timeval *tv, int *completed);
-int libusb_handle_events(libusb_context *ctx);
-int libusb_handle_events_completed(libusb_context *ctx, int *completed);
-int libusb_handle_events_locked(libusb_context *ctx,
-	struct timeval *tv);
-int libusb_pollfds_handle_timeouts(libusb_context *ctx);
-int libusb_get_next_timeout(libusb_context *ctx,
-	struct timeval *tv);
-]]
 
 
 
-ffi.cdef[[
-const struct libusb_pollfd **  libusb_get_pollfds(
-	libusb_context *ctx);
-void  libusb_set_pollfd_notifiers(libusb_context *ctx,
-	libusb_pollfd_added_cb added_cb, libusb_pollfd_removed_cb removed_cb,
-	void *user_data);
-]]
+
 
 ffi.cdef[[
 typedef enum	{
