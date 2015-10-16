@@ -10,8 +10,11 @@
 	Most importantly, you can get a handle on something you can actually
 	use to read and write from using: getActiveDevice()
 --]]
-local usb = require("libusb")
 local ffi = require("ffi")
+local usb = require("libusb")
+
+local USBDevice = require("USBDevice")
+
 
 
 local USBDeviceReference = {}

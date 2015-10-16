@@ -394,6 +394,8 @@ Constants.LIBUSB_DT_BOS_MAX_SIZE		= ((Constants.LIBUSB_DT_BOS_SIZE)     +
 					(Constants.LIBUSB_BT_CONTAINER_ID_SIZE));
 
 
+
+
 -- Local Functions
 -- In LuaJIT, callback functions are a scarce resource.  If you explicitly do a type
 -- cast for the function, then you have a chance of freeing up the resources
@@ -415,6 +417,39 @@ local function usb_get_enum_value(name)
 	return nil;
 end
 
+--[[
+struct libusb_endpoint_descriptor {
+	uint8_t  bLength;
+	uint8_t  bDescriptorType;	 
+	uint8_t  bEndpointAddress;
+	uint8_t  bmAttributes;
+	uint16_t wMaxPacketSize;
+	uint8_t  bInterval;
+	uint8_t  bRefresh;
+	uint8_t  bSynchAddress;
+	const unsigned char *extra;
+	int extra_length;
+};
+--]]
+local libusb_endpoint_descriptor = ffi.typeof("struct libusb_endpoint_descriptor")
+ffi.metatype(libusb_endpoint_descriptor, {
+	__tostring = function(self)
+		return string.format([[
+      Address: %d 
+MaxPacketSize: %d 
+     Interval: %d 
+      Refresh: %d 
+  SyncAddress: %d 
+ Extra Length: %d
+]],
+	self.bEndpointAddress,
+	self.wMaxPacketSize,
+	self.bInterval,
+	self.bRefresh,
+	self.bSynchAddress,
+	self.extra_length);
+	end,
+});
 
 local exports = {
 	Lib_libusb = Lib_libusb;

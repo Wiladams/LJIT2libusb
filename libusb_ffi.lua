@@ -66,6 +66,7 @@ struct libusb_interface_descriptor {
 };
 ]]
 
+
 ffi.cdef[[ 
 struct libusb_interface {
 	const struct libusb_interface_descriptor *altsetting;
