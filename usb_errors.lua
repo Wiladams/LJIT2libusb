@@ -1,4 +1,4 @@
-usb_errors.lua
+--usb_errors.lua
 
 local ErrorStrings = {
 	[0] = "Success";
@@ -16,3 +16,5 @@ local ErrorStrings = {
 	[12] = "Operation not supported or not implemented";
 	[13] = "Other error";
 }
+
+return ErrorStrings
