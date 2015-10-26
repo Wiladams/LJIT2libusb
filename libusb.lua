@@ -3,8 +3,8 @@ local bit = require("bit")
 local lshift, rshift = bit.lshift, bit.rshift
 
 
-local Lib_libusb = require("libusb_ffi")
 local libc = require("libc")
+local Lib_libusb = require("libusb_ffi")
 
 local Enums = {
 

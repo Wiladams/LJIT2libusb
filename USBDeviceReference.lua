@@ -12,6 +12,7 @@
 --]]
 local ffi = require("ffi")
 local usb = require("libusb")
+local usbvendordb = require("usbvendordb")
 
 local USBDevice = require("USBDevice")
 
@@ -36,7 +37,7 @@ function USBDeviceReference.init(self, devHandle)
 	local configdesc = ffi.new("struct libusb_config_descriptor *[1]")
 	local configres = usb.libusb_get_active_config_descriptor(devHandle, configdesc);
 	if configres ~= 0 then
-		return nil, "libusb_get_active_conifig_descriptor(), failed"
+		return nil, "libusb_get_active_config_descriptor(), failed"
 	end
 	configdesc = configdesc[0];
 	ffi.gc(configdesc, usb.libusb_free_config_descriptor);
@@ -49,7 +50,6 @@ function USBDeviceReference.init(self, devHandle)
 		Description = desc;
 		ActiveConfig = configdesc;
 
-
 		-- Device class information
 		Class = tonumber(desc.bDeviceClass);
 		Subclass = tonumber(desc.bDeviceSubClass);
@@ -61,6 +61,11 @@ function USBDeviceReference.init(self, devHandle)
 	}
 	setmetatable(obj, USBDeviceReference_mt)
 
+	obj.VendorId = tonumber(desc.idVendor);
+	obj.ProductId = tonumber(desc.idProduct);
+
+	obj.VendorName = usbvendordb[obj.VendorId].name;
+	obj.ProductName = usbvendordb[obj.VendorId].products[tonumber(desc.idProduct)];
 
 	return obj;
 end

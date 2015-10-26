@@ -1,4 +1,5 @@
 local ffi = require("ffi")
+local jit = require("jit")
 local bit = require("bit")
 local band, bor = bit.band, bit.bor
 
@@ -92,12 +93,14 @@ function USBContext.devices(self)
 end
 
 local function hpcallback(ctx, device, event, user_data)
-	print("hotplugcallback: ", device, event)
+	print("hotplugcallback: ", ctx, device, event, user_data)
 	io.write("hotplugcallback\n")
 	io.flush();
 end
+jit.off(hpcallback)
 
 function USBContext.registerHotplugCallback(self)
+	jit.off(hpcallback)
 	local cb = usb.libusb_hotplug_callback(hpcallback);
 	local cbhandle = ffi.new("libusb_hotplug_callback_handle[1]")
 print("cb: ",cb)

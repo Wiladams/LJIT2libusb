@@ -8,8 +8,8 @@ local function printVersion(ver)
 	if not ver then return false; end
 
 	print(string.format([[
-    Version: %d.%d.%d.%d%s
-Description: %s
+Library Version: %d.%d.%d.%d%s
+    Description: %s
 ]],
 	ver.Major,
 	ver.Minor,
@@ -22,6 +22,8 @@ end
 local function printDeviceReference(devRef)
 	print(string.format([[
 == USB Device Reference ==
+ Vendor Name: %s
+Product Name: %s
   Class: %s
     Bus: %d 
    Port: %d 
@@ -30,6 +32,8 @@ Negotiated Speed: %s [%d]
 Configurations: %d
     Interfaces: %d
 ]],
+	devRef.VendorName,
+	devRef.ProductName,
 	devRef.ClassDescription,
 	devRef:getBusNumber(),
 	devRef:getPortNumber(),
@@ -97,9 +101,9 @@ local function main()
 	local ctxt = USBContext();
 	test_version(ctxt);
 	--test_enumDeviceReferences(ctxt);
-	test_enumDevices(ctxt);
+	--test_enumDevices(ctxt);
 
-	--test_hotplug();
+	test_hotplug(ctxt);
 end
 
 main()
