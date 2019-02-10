@@ -57,8 +57,10 @@ for line in io.lines(arg[1]) do
 			else
 				-- Get the product ID and name
 				local pid, name = string.match(line, "^%c(%x%x%x%x)%s+(.*)")
-				name = name:gsub('\"', '\\"'):gsub("\\", '\\')
-				print(string.format('\t\t\t[0x%04x] = "%s",', tonumber(pid,16), name))
+				if name then
+					name = name:gsub('\"', '\\"'):gsub("\\", '\\')
+					print(string.format('\t\t\t[0x%04x] = "%s",', tonumber(pid,16), name))
+				end
 			end
 		end
 	end
